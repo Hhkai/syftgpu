@@ -1,0 +1,52 @@
+乘法的入口:  precision.py  matmul 这个函数中 得到response后 再truncate 然后get 
+    修改其除法 message_handler 
+
+    1297.7216 * 10000 - 16777216 = -3800000
+
+为了得到正确答案, 在additive_shared.py这个文件中新增函数get100
+同时, 修改tensor.py里的get 
+
+=======
+
+关于24bit: 
+precison.py 
+additive-shared
+utils
+
+//
+
+修改了 additive-shared 的 random_type的数据类型
+
+spdz.py  provide-primitive问题: 给compute和mask传入crypto_provider 
+             在spdz_mul的except里面修改为用crypto_provider
+
+fss.py: 143 crypto_provider
+
+native: 413 阻止cpu进入gpu而报错
+
+common-util   cuda
+
+==========
+
+注意 beaver 也有一个int24module
+
+beaver  build_triple
+
+
+=========
+
+关于精度
+
+precision.py
+additive_shared.py
+
+
+=========
+
+乘法原理:
+对于X=X1+X2, Y=Y1+Y2;  令A*B=C
+分别构造D1=X1-A1, D2=X2-A2, E1=Y1-B1, E2=Y2-B2. 
+双方交换得到 D=X-A , E=Y-B
+由于DE=XY-AY-XB+AB, 那么XY=DE+AY+XB-AB=(DE+AY1+X1B)+(AY2+X2B-C) 
+这个对于整数是没有任何问题的. 
+对于定点数, share前左移, 运算后右移, get前再左移, 也大概没问题. 
